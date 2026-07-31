@@ -9,11 +9,11 @@ import { cn } from "@/lib/utils";
 import { MapPin, Search, Star, Stethoscope } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 
 type Tab = "doctors" | "hospitals";
 
-export default function SearchPage() {
+function SearchPageInner() {
   const params = useSearchParams();
   const initialTab = (params.get("tab") as Tab) ?? "doctors";
   const [tab, setTab] = useState<Tab>(initialTab);
@@ -144,3 +144,11 @@ export default function SearchPage() {
     </div>
   );
 }
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={null}>
+      <SearchPageInner />
+    </Suspense>
+  );
+    }
