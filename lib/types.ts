@@ -1,4 +1,4 @@
-export type UserRole = "patient" | "hospital_admin" | "doctor" | "receptionist";
+export type StaffRole = "admin" | "hospital_admin" | "doctor" | "receptionist";
 
 export type AppointmentStatus =
   | "booked"
@@ -14,22 +14,46 @@ export type PriorityLevel = "normal" | "elderly" | "pregnant" | "disability" | "
 
 export type Weekday = "sun" | "mon" | "tue" | "wed" | "thu" | "fri" | "sat";
 
+export interface Governorate {
+  id: string;
+  name_ar: string;
+  name_en?: string;
+}
+
+export interface District {
+  id: string;
+  governorate_id: string;
+  name_ar: string;
+  name_en?: string;
+}
+
 export interface Profile {
   id: string;
-  role: UserRole;
+  role: StaffRole;
+  full_name: string;
+  phone?: string | null;
+  avatar_url?: string | null;
+}
+
+export interface Patient {
+  id: string;
   full_name: string;
   phone: string;
+  date_of_birth?: string | null;
   gender?: "male" | "female";
-  avatar_url?: string | null;
-  city?: string | null;
+  governorate_id?: string | null;
+  district_id?: string | null;
+  notes?: string | null;
 }
 
 export interface Hospital {
   id: string;
   name: string;
   slug: string;
-  city: string;
-  district?: string | null;
+  governorate_id: string;
+  governorate_name?: string;
+  district_id?: string | null;
+  district_name?: string;
   address?: string | null;
   phone: string;
   logo_url?: string | null;
@@ -58,6 +82,8 @@ export interface Doctor {
   profile_id: string;
   hospital_id: string;
   department_id: string;
+  governorate_id?: string | null;
+  district_id?: string | null;
   full_name: string;
   title: string;
   specialty: string;
@@ -87,8 +113,9 @@ export interface DoctorSchedule {
 
 export interface Appointment {
   id: string;
-  patient_id: string;
+  patient_ref_id: string;
   patient_name?: string;
+  booking_code?: string;
   hospital_id: string;
   hospital_name?: string;
   department_id: string;
@@ -119,37 +146,26 @@ export interface QueueTicket {
 }
 
 export const WEEKDAY_LABELS_AR: Record<Weekday, string> = {
-  sun: "الأحد",
-  mon: "الاثنين",
-  tue: "الثلاثاء",
-  wed: "الأربعاء",
-  thu: "الخميس",
-  fri: "الجمعة",
-  sat: "السبت",
+  sun: "الأحد", mon: "الاثنين", tue: "الثلاثاء", wed: "الأربعاء",
+  thu: "الخميس", fri: "الجمعة", sat: "السبت",
 };
 
 export const PRIORITY_LABELS_AR: Record<PriorityLevel, string> = {
-  normal: "عادي",
-  elderly: "كبار السن",
-  pregnant: "حامل",
-  disability: "ذوي الإعاقة",
-  emergency: "حالة طارئة",
+  normal: "عادي", elderly: "كبار السن", pregnant: "حامل",
+  disability: "ذوي الإعاقة", emergency: "حالة طارئة",
 };
 
 export const APPOINTMENT_STATUS_LABELS_AR: Record<AppointmentStatus, string> = {
-  booked: "محجوز",
-  checked_in: "تم تسجيل الوصول",
-  in_progress: "قيد الكشف",
-  completed: "مكتمل",
-  cancelled: "ملغى",
-  no_show: "لم يحضر",
+  booked: "محجوز", checked_in: "تم تسجيل الوصول", in_progress: "قيد الكشف",
+  completed: "مكتمل", cancelled: "ملغى", no_show: "لم يحضر",
 };
 
 export const QUEUE_STATUS_LABELS_AR: Record<QueueStatus, string> = {
-  waiting: "بالانتظار",
-  called: "تم النداء",
-  in_progress: "قيد الكشف",
-  done: "تم الانتهاء",
-  skipped: "تم التخطي",
-  cancelled: "ملغى",
+  waiting: "بالانتظار", called: "تم النداء", in_progress: "قيد الكشف",
+  done: "تم الانتهاء", skipped: "تم التخطي", cancelled: "ملغى",
+};
+
+export const STAFF_ROLE_LABELS_AR: Record<StaffRole, string> = {
+  admin: "مدير النظام", hospital_admin: "مسؤول المنشأة",
+  doctor: "طبيب", receptionist: "موظف استقبال",
 };
