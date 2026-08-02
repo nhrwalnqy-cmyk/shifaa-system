@@ -1,3 +1,5 @@
+"use client";
+
 import { DashboardShell, NavItem } from "@/components/layout/DashboardShell";
 import { LayoutDashboard } from "lucide-react";
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { DashboardShell, NavItem } from "@/components/layout/DashboardShell";
 import { Building2, CalendarClock, ClipboardList, LayoutDashboard, Stethoscope, Users } from "lucide-react";
 
