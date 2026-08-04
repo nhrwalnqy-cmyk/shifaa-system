@@ -1,14 +1,22 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { getSupabaseConfig } from "@/lib/supabase/config";
 
 // Refreshes the Supabase auth session on every request and protects
 // role-scoped routes (/patient, /hospital, /doctor, /reception).
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request: { headers: request.headers } });
+  const { url, key, configured } = getSupabaseConfig();
+
+  // Keep the preview usable when Supabase variables have not been injected yet.
+  // Auth protection is enabled automatically as soon as the integration is configured.
+  if (!configured) {
+    return response;
+  }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    url,
+    key,
     {
       cookies: {
         get(name: string) {
