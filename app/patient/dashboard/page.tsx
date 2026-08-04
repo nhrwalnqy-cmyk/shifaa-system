@@ -21,10 +21,10 @@ export default function PatientDashboardPage() {
     <div>
       <PatientTopBar patientName={patientName} greeting="مساء الخير 👋" />
 
-      <div className="container-app space-y-6 py-6">
+      <div className="container-app space-y-5 md:space-y-6 py-4 md:py-6">
         {activeAppointment && (
           <section>
-            <h2 className="mb-3 font-display text-lg font-bold text-teal-950">دورك الحالي</h2>
+            <h2 className="mb-3 font-display text-lg md:text-xl font-bold text-teal-950">دورك الحالي</h2>
             <QueueBoard
               nowServing={42}
               yourNumber={43}
@@ -41,20 +41,20 @@ export default function PatientDashboardPage() {
 
         {/* Quick actions */}
         <section className="grid grid-cols-2 gap-3">
-          <Link href="/patient/search">
-            <Card className="flex flex-col items-center gap-2 p-5 text-center hover:border-teal-300">
+          <Link href="/patient/search" className="focus-visible:outline-offset-2">
+            <Card className="flex flex-col items-center justify-center gap-3 p-4 md:p-5 text-center transition-all hover:shadow-md active:scale-95">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-teal-100 text-teal-800">
                 <Search className="h-5 w-5" />
               </span>
-              <p className="text-sm font-bold text-teal-950">ابحث عن طبيب</p>
+              <p className="text-sm font-bold text-teal-950 leading-tight">ابحث عن طبيب</p>
             </Card>
           </Link>
-          <Link href="/patient/search?tab=hospitals">
-            <Card className="flex flex-col items-center gap-2 p-5 text-center hover:border-teal-300">
+          <Link href="/patient/search?tab=hospitals" className="focus-visible:outline-offset-2">
+            <Card className="flex flex-col items-center justify-center gap-3 p-4 md:p-5 text-center transition-all hover:shadow-md active:scale-95">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                 <CalendarPlus className="h-5 w-5" />
               </span>
-              <p className="text-sm font-bold text-teal-950">حجز موعد جديد</p>
+              <p className="text-sm font-bold text-teal-950 leading-tight">حجز موعد جديد</p>
             </Card>
           </Link>
         </section>
@@ -62,32 +62,32 @@ export default function PatientDashboardPage() {
         {/* Upcoming appointments */}
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold text-teal-950">مواعيدك القادمة</h2>
-            <Link href="/patient/appointments" className="text-sm font-semibold text-teal-700">
+            <h2 className="font-display text-lg md:text-xl font-bold text-teal-950">مواعيدك القادمة</h2>
+            <Link href="/patient/appointments" className="text-xs md:text-sm font-semibold text-teal-700 hover:text-teal-800 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
               عرض الكل
             </Link>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-2.5 md:space-y-3">
             {upcoming.length === 0 && (
               <Card className="p-6 text-center text-sm text-slate-500">لا توجد مواعيد قادمة حاليًا</Card>
             )}
             {upcoming.map((appt) => (
-              <Card key={appt.id} className="flex items-center gap-4 p-4">
-                <div className="flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-teal-950 text-white">
-                  <span className="text-[10px] leading-none text-teal-300">
+              <Card key={appt.id} className="flex items-center gap-3 md:gap-4 p-3 md:p-4 transition-all hover:shadow-md">
+                <div className="flex h-12 w-12 md:h-14 md:w-14 shrink-0 flex-col items-center justify-center rounded-xl bg-teal-950 text-white">
+                  <span className="text-[10px] md:text-xs leading-tight text-teal-300">
                     {formatArabicDate(appt.appointment_date).split(" ")[0]}
                   </span>
-                  <span className="nums font-mono text-sm font-bold">
+                  <span className="nums font-mono text-xs md:text-sm font-bold">
                     {formatArabicTime(appt.scheduled_time)}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-display font-semibold text-teal-950">{appt.doctor_name}</p>
-                  <p className="truncate text-xs text-slate-500">
+                  <p className="truncate font-display font-semibold text-teal-950 text-sm md:text-base">{appt.doctor_name}</p>
+                  <p className="truncate text-xs text-slate-600">
                     {appt.hospital_name} · {appt.department_name}
                   </p>
                 </div>
-                <Badge tone="teal">{APPOINTMENT_STATUS_LABELS_AR[appt.status]}</Badge>
+                <Badge tone="teal" className="shrink-0">{APPOINTMENT_STATUS_LABELS_AR[appt.status]}</Badge>
               </Card>
             ))}
           </div>
@@ -96,25 +96,25 @@ export default function PatientDashboardPage() {
         {/* Nearby hospitals */}
         <section>
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold text-teal-950">مستشفيات قريبة منك</h2>
-            <Link href="/patient/search?tab=hospitals" className="text-sm font-semibold text-teal-700">
+            <h2 className="font-display text-lg md:text-xl font-bold text-teal-950">مستشفيات قريبة منك</h2>
+            <Link href="/patient/search?tab=hospitals" className="text-xs md:text-sm font-semibold text-teal-700 hover:text-teal-800 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2">
               عرض الكل
             </Link>
           </div>
-          <div className="scrollbar-none -mx-4 flex gap-3 overflow-x-auto px-4 pb-2">
+          <div className="scrollbar-none -mx-3 xs:-mx-4 flex gap-3 overflow-x-auto px-3 xs:px-4 pb-2">
             {mockHospitals.map((h) => (
-              <Link href={`/patient/search?hospital=${h.slug}`} key={h.id} className="shrink-0">
-                <Card className="w-64 p-4">
+              <Link href={`/patient/search?hospital=${h.slug}`} key={h.id} className="shrink-0 focus-visible:rounded focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-teal-500">
+                <Card className="w-56 md:w-64 p-3 md:p-4 transition-all hover:shadow-md">
                   <div className="flex items-center justify-between">
                     <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-teal-100 text-teal-800">
                       <MapPin className="h-5 w-5" />
                     </span>
                     <span className="flex items-center gap-1 text-xs font-bold text-amber-600">
-                      <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" /> {h.rating}
+                      <Star className="h-3 md:h-3.5 w-3 md:w-3.5 fill-amber-500 text-amber-500" /> {h.rating}
                     </span>
                   </div>
-                  <p className="mt-3 truncate font-display font-bold text-teal-950">{h.name}</p>
-                  <p className="text-xs text-slate-500">
+                  <p className="mt-3 truncate font-display font-bold text-teal-950 text-sm md:text-base">{h.name}</p>
+                  <p className="text-xs text-slate-600">
                     {h.city} — {h.district}
                   </p>
                   <div className="mt-3 flex items-center justify-between text-xs text-teal-700">

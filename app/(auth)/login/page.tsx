@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Logo } from "@/components/layout/Logo";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { createClient } from "@/lib/supabase/client";
 import { StaffRole } from "@/lib/types";
-import { Lock, Mail } from "lucide-react";
+import { Lock, Mail, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -18,7 +19,7 @@ const roleRedirect: Record<StaffRole, string> = {
   receptionist: "/reception/dashboard",
 };
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
   const supabase = createClient();
 
@@ -32,25 +33,31 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
 
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    if (authError || !authData.user) {
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      if (authError || !authData.user) {
+        setLoading(false);
+        return setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      }
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", authData.user.id)
+        .single();
+
       setLoading(false);
-      return setError("البريد الإلكتروني أو كلمة المرور غير صحيحة");
+      if (profileError || !profile) return setError("تعذر العثور على بيانات الحساب");
+
+      router.push(roleRedirect[profile.role as StaffRole] ?? "/login");
+    } catch (e) {
+      setLoading(false);
+      setError("حدث خطأ. يرجى المحاولة مرة أخرى.");
+      console.error("[LoginPage] Error:", e);
     }
-
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", authData.user.id)
-      .single();
-
-    setLoading(false);
-    if (profileError || !profile) return setError("تعذر العثور على بيانات الحساب");
-
-    router.push(roleRedirect[profile.role as StaffRole] ?? "/login");
   }
 
   return (
@@ -60,11 +67,11 @@ export default function LoginPage() {
           <Logo />
         </div>
 
-        <div className="rounded-2xl border border-line bg-white p-6 shadow-card">
-          <h1 className="mb-1 font-display text-xl font-bold text-teal-950">
+        <div className="rounded-2xl border border-slate-200 bg-white p-6 md:p-8 shadow-sm">
+          <h1 className="mb-2 font-display text-xl md:text-2xl font-bold text-teal-950">
             تسجيل دخول الفريق الطبي
           </h1>
-          <p className="mb-5 text-sm text-slate-500">
+          <p className="mb-6 text-sm text-slate-600">
             تسجيل الدخول متاح فقط للأطباء والمستشفيات ومديري النظام
           </p>
 
@@ -87,6 +94,8 @@ export default function LoginPage() {
               icon={<Mail className="h-4 w-4" />}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              disabled={loading}
+              aria-label="البريد الإلكتروني"
             />
             <Input
               label="كلمة المرور"
@@ -95,29 +104,52 @@ export default function LoginPage() {
               icon={<Lock className="h-4 w-4" />}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              disabled={loading}
+              aria-label="كلمة المرور"
             />
 
-            {error && <p className="text-xs text-danger">{error}</p>}
+            {error && (
+              <div className="flex items-start gap-2 rounded-lg bg-danger/10 p-3 text-danger">
+                <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
+                <p className="text-sm font-medium">{error}</p>
+              </div>
+            )}
 
-            <Button fullWidth loading={loading} onClick={handleLogin}>
+            <Button
+              fullWidth
+              loading={loading}
+              disabled={!email || !password || loading}
+              onClick={handleLogin}
+              aria-busy={loading}
+            >
               تسجيل الدخول
             </Button>
 
-            <p className="text-center text-xs text-slate-500">
-              منشأتك غير مسجلة؟{" "}
-              <Link href="/hospital-register" className="font-bold text-teal-800">
-                سجّل مستشفاك
-              </Link>
-            </p>
-            <p className="text-center text-xs text-slate-500">
-              عايز تحجز موعد؟{" "}
-              <Link href="/patient/search" className="font-bold text-teal-800">
-                احجز بدون حساب
-              </Link>
-            </p>
+            <div className="space-y-2 pt-2">
+              <p className="text-center text-xs text-slate-600">
+                منشأتك غير مسجلة؟{" "}
+                <Link href="/hospital-register" className="font-semibold text-teal-700 hover:text-teal-800">
+                  سجّل مستشفاك
+                </Link>
+              </p>
+              <p className="text-center text-xs text-slate-600">
+                عايز تحجز موعد؟{" "}
+                <Link href="/patient/search" className="font-semibold text-teal-700 hover:text-teal-800">
+                  احجز بدون حساب
+                </Link>
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <ErrorBoundary>
+      <LoginPageInner />
+    </ErrorBoundary>
   );
 }

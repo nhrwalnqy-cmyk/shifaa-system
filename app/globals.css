@@ -5,45 +5,193 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
+  
   body {
     @apply bg-paper text-ink font-body antialiased;
     font-feature-settings: "tnum" 1, "ss01" 1;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 {
-    @apply font-display;
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
   }
+  
+  h1 { @apply text-2xl md:text-3xl; }
+  h2 { @apply text-xl md:text-2xl; }
+  h3 { @apply text-lg md:text-xl; }
+  
+  p {
+    @apply text-sm md:text-base;
+  }
+  
   * {
     @apply border-line;
   }
+  
+  /* Focus visible for keyboard navigation - important for accessibility */
   :focus-visible {
-    outline: 2px solid #E8A33D;
+    outline: 2px solid #E8A33D !important;
     outline-offset: 2px;
     border-radius: 4px;
   }
+  
+  button:focus-visible {
+    outline-offset: 3px;
+  }
+  
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid #0F766E !important;
+    outline-offset: 1px;
+  }
+  
   ::selection {
     background: #FFCB6B;
     color: #052422;
   }
+  
+  /* Improved scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+  }
+}
+
+@layer components {
+  /* Smooth transitions for touch and desktop */
+  .transition-safe {
+    @apply transition-colors duration-150;
+  }
+  
+  /* Accessible button baseline - minimum 44px touch target */
+  button, [role="button"], a[href] {
+    @apply min-h-10 focus-visible:rounded;
+  }
+  
+  /* Focus ring utilities for forms */
+  .focus-ring-teal {
+    @apply focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2;
+  }
 }
 
 @layer utilities {
+  /* Tabular numerals for consistent number widths */
   .nums {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum" 1;
   }
+  
+  /* Responsive container with mobile-first approach */
   .container-app {
-    @apply mx-auto w-full max-w-6xl px-4 sm:px-6;
+    @apply mx-auto w-full px-3 xs:px-4 sm:px-6 md:px-8;
+    max-width: 96rem;
   }
+  
+  /* Hide scrollbar while preserving scrolling */
   .scrollbar-none::-webkit-scrollbar {
     display: none;
   }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  /* RTL-aware spacing and positioning */
+  .text-right-rtl {
+    @apply text-right;
+    [dir="ltr"] & {
+      @apply text-left;
+    }
+  }
+  
+  /* Mobile-first responsive text sizes */
+  .text-responsive-sm {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-base {
+    @apply text-sm md:text-base;
+  }
+  
+  .text-responsive-lg {
+    @apply text-base md:text-lg;
+  }
+  
+  .text-responsive-xl {
+    @apply text-lg md:text-xl;
+  }
+  
+  /* Accessible visually hidden content for screen readers */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  /* Touch target sizing for mobile accessibility */
+  .touch-target {
+    @apply min-h-12 min-w-12;
+  }
+  
+  /* Safe area support for notched devices */
+  .safe-area-inset {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-top: max(1rem, env(safe-area-inset-top));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }
 
+/* Responsive images */
+img {
+  @apply max-w-full h-auto;
+}
+
+/* Prevent horizontal overflow on small screens */
+@media (max-width: 640px) {
+  body {
+    @apply overflow-x-hidden;
+  }
+}
+
+/* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  :focus-visible {
+    outline-width: 3px;
   }
 }

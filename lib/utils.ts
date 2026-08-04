@@ -46,3 +46,56 @@ export function priorityWeight(priority: string): number {
   };
   return weights[priority] ?? 3;
 }
+
+/**
+ * Creates a debounced function that delays invocation until after the specified wait time
+ * Useful for search inputs, resizing handlers, etc.
+ */
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+
+  return function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/**
+ * Throttles a function to execute at most once per specified wait time
+ * Useful for scroll and resize handlers
+ */
+export function throttle<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout | null = null;
+  let previous = 0;
+
+  return function executedFunction(...args: Parameters<T>) {
+    const now = Date.now();
+    const remaining = wait - (now - previous);
+
+    if (remaining <= 0 || remaining > wait) {
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = null;
+      }
+      previous = now;
+      func(...args);
+    } else if (!timeout) {
+      timeout = setTimeout(() => {
+        previous = Date.now();
+        timeout = null;
+        func(...args);
+      }, remaining);
+    }
+  };
+}
